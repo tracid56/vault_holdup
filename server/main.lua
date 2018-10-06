@@ -29,6 +29,7 @@ AddEventHandler('vault_holdup:rob', function(robb)
 	local _source = source
 	local xPlayer  = ESX.GetPlayerFromId(_source)
 	local xPlayers = ESX.GetPlayers()
+	local drill = xPlayer.getInventoryItem('drill')	
 
 	if Stores[robb] then
 		local store = Stores[robb]
@@ -47,47 +48,52 @@ AddEventHandler('vault_holdup:rob', function(robb)
 		end
 
 		if rob == false then
-			if cops >= Config.PoliceNumberRequired then
-				rob = true
-				for i=1, #xPlayers, 1 do
-					local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
-					if xPlayer.job.name == 'police' or xPlayer.job.name == 'spolice' or xPlayer.job.name == 'sheriff' then
-						TriggerClientEvent('esx:showNotification', xPlayers[i], _U('rob_in_prog', store.nameofstore))
-						TriggerClientEvent('vault_holdup:setblip', xPlayers[i], Stores[robb].position)
+			if xPlayer.getInventoryItem('drill').count >= 1 then
+				if cops >= Config.PoliceNumberRequired then
+					xPlayer.removeInventoryItem('drill', 1)
+					rob = true
+					for i=1, #xPlayers, 1 do
+						local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
+						if xPlayer.job.name == 'police' or xPlayer.job.name == 'spolice' or xPlayer.job.name == 'sheriff' then
+							TriggerClientEvent('esx:showNotification', xPlayers[i], _U('rob_in_prog', store.nameofstore))
+							TriggerClientEvent('vault_holdup:setblip', xPlayers[i], Stores[robb].position)
+						end
 					end
-				end
-
-				TriggerClientEvent('esx:showNotification', _source, _U('started_to_rob', store.nameofstore))
-				TriggerClientEvent('esx:showNotification', _source, _U('alarm_triggered'))
-
-				TriggerClientEvent('vault_holdup:currentlyrobbing', _source, robb)
-				TriggerClientEvent('vault_holdup:starttimer', _source)
-
-				Stores[robb].lastrobbed = os.time()
-				robbers[_source] = robb
-				local savedSource = _source
-				SetTimeout(store.secondsRemaining * 1000, function()
-
-					if robbers[savedSource] then
-						rob = false
-						if xPlayer then
-							local award = store.reward
-							TriggerClientEvent('vault_holdup:robberycomplete', savedSource, award)
-							xPlayer.addAccountMoney('black_money', award)
-
-							local xPlayers = ESX.GetPlayers()
-							for i=1, #xPlayers, 1 do
-								local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
-								if xPlayer.job.name == 'police' xPlayer.job.name == 'spolice' or xPlayer.job.name == 'sheriff' then
-									TriggerClientEvent('esx:showNotification', xPlayers[i], _U('robbery_complete_at', store.nameofstore))
-									TriggerClientEvent('vault_holdup:killblip', xPlayers[i])
+	
+					TriggerClientEvent('esx:showNotification', _source, _U('started_to_rob', store.nameofstore))
+					TriggerClientEvent('esx:showNotification', _source, _U('alarm_triggered'))
+					TriggerClientEvent('esx_borrmaskin:startDrill', source)
+					TriggerClientEvent('vault_holdup:currentlyrobbing', _source, robb)
+					TriggerClientEvent('vault_holdup:starttimer', _source)
+					
+					Stores[robb].lastrobbed = os.time()
+					robbers[_source] = robb
+					local savedSource = _source
+					SetTimeout(store.secondsRemaining * 1000, function()
+	
+						if robbers[savedSource] then
+							rob = false
+							if xPlayer then
+								local award = store.reward
+								TriggerClientEvent('vault_holdup:robberycomplete', savedSource, award)
+								xPlayer.addAccountMoney('black_money', award)
+								
+								local xPlayers = ESX.GetPlayers()
+								for i=1, #xPlayers, 1 do
+									local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
+									if xPlayer.job.name == 'police' or xPlayer.job.name == 'spolice' or xPlayer.job.name == 'sheriff' then
+										TriggerClientEvent('esx:showNotification', xPlayers[i], _U('robbery_complete_at', store.nameofstore))
+										TriggerClientEvent('vault_holdup:killblip', xPlayers[i])
+									end
 								end
 							end
 						end
-					end
-				end)
+					end)
+				else
+					TriggerClientEvent('esx:showNotification', _source, _U('min_police', Config.PoliceNumberRequired))
+				end
 			else
-				TriggerClientEvent('esx:showNotification', _source, _U('min_police', Config.PoliceNumberRequired))
+				TriggerClientEvent('esx:showNotification', source, _U('need_drill'))
 			end
 		else
 			TriggerClientEvent('esx:showNotification', _source, _U('robbery_already'))
