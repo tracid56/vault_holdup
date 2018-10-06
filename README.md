@@ -5,6 +5,7 @@ A script for robbing the vaults on your server.
 - [ESX_Policejob](https://github.com/ESX-Org/esx_policejob)
 - [Safe_Holdup](https://github.com/x0Z3ro0x/safe_holdup)
 - [Teller_Holdup](https://github.com/x0Z3ro0x/teller_holdup)
+- [esx_borrmaskin](https://github.com/Vanheden/esx_borrmaskin)   <-- ONLY IF YOU WANT JACKHAMMER ANIMATION WHILE ROBBING
 
 ### Installation
 - Clone or Download
