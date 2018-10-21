@@ -44,7 +44,7 @@ AddEventHandler('vault_holdup:rob', function(robb)
 		local cops = 0
 		for i=1, #xPlayers, 1 do
 			local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
-			if (xPlayer.job.name == 'police' or xPlayer.job.name == 'sheriff') then
+			if (xPlayer.job.name == 'police' or xPlayer.job.name == 'sheriff' or xPlayer.job.name == 'spolice') then
 				cops = cops + 1
 			end
 		end
@@ -75,7 +75,7 @@ AddEventHandler('vault_holdup:rob', function(robb)
 						rob = true
 						for i=1, #xPlayers, 1 do
 							local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
-							if (xPlayer.job.name == 'police' or xPlayer.job.name == 'sheriff') then
+							if (xPlayer.job.name == 'police' or xPlayer.job.name == 'sheriff' or xPlayer.job.name == 'spolice') then
 								TriggerClientEvent('esx:showNotification', xPlayers[i], _U('rob_in_prog', store.nameofstore))
 								TriggerClientEvent('vault_holdup:setblip', xPlayers[i], Stores[robb].position)
 							end
